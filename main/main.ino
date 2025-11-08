@@ -4,13 +4,14 @@
 
 float bpm;
 GyroReading g;
+EllipseConfig cfg;
+bool alert = false;
 
 void setup() {
   HR_init(/*serialLogging=*/false, /*calibrationMode=*/false);
 
   Gyro_init(/*serialLogging=*/true);
 
-  EllipseConfig cfg;
   Ellipse_init(cfg);
 }
 
@@ -20,11 +21,18 @@ void loop() {
   Serial.println(bpm);
 
   if (Gyro_step(g)) {
+    if (g.rollRate_dps > 100 || g.pitchRate_dps > 100) {
+      alert = true;
+    } else {
+      alert = false;
+    }
+
     Serial.print("roll=");  Serial.print(g.roll_deg, 1);
     Serial.print("  pitch="); Serial.print(g.pitch_deg, 1);
     Serial.print("  | rates dps: ");
     Serial.print(g.rollRate_dps, 1); Serial.print(", ");
-    Serial.println(g.pitchRate_dps, 1);
+    Serial.print(g.pitchRate_dps, 1); Serial.print(" | ");
+    Serial.println(alert ? " !ALERT" : "");
   }
 
   EllipsePoint p;

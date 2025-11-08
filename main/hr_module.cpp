@@ -4,7 +4,7 @@
 // ======= Instances (kept private to the module) =======
 static MAX30102_Driver heartSensor;
 static HeartRate_Service hrService;
-static SOSButton_Driver sosButton(4, /*usePullUp=*/false, /*activeHigh=*/true);
+static SOSButton_Driver sosButton(34, /*usePullUp=*/false, /*activeHigh=*/true);
 
 // ======= Module state =======
 static bool g_inited = false;
@@ -76,14 +76,15 @@ void HR_init(bool serialLogging, bool calibrationMode) {
   }
 
   // Button
-  // sosButton.begin();
-  // sosButton.setCallback(onButtonEvent);
-  // if (g_logging) {
+  sosButton.begin();
+  sosButton.setCallback(onButtonEvent);
+  if (sosButton.isPressed()) {
   //   Serial.println(F("✓ Button initialized."));
   //   Serial.print(F("Button initial state: "));
   //   Serial.println(sosButton.isPressed() ? F("PRESSED") : F("NOT PRESSED"));
   //   Serial.println();
-  // }
+    Serial.println("Inner ALERT!");
+  }
 
   // Sensor
   if (g_logging) Serial.println(F("Initializing MAX30102 sensor..."));
