@@ -87,7 +87,7 @@ private:
   void bitMask(uint8_t reg, uint8_t mask, uint8_t value);
   
 public:
-  MAX30102_Driver(uint8_t sdaPin = 21, uint8_t sclPin = 22);
+  MAX30102_Driver(uint8_t sdaPin = 26, uint8_t sclPin = 27);
   
   // Initialization and configuration
   bool begin();
