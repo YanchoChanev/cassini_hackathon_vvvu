@@ -1,3 +1,5 @@
+#include <SoftwareSerial.h>
+
 #include "hr_module.h"
 #include "gyro_module.h"
 #include "ellipse_sim.h"
@@ -7,7 +9,13 @@ GyroReading g;
 EllipseConfig cfg;
 bool alert = false;
 
+SoftwareSerial link(32, 33);
+
 void setup() {
+  Serial.begin(115200);
+  
+  link.begin(9600);
+
   HR_init(/*serialLogging=*/false, /*calibrationMode=*/false);
 
   Gyro_init(/*serialLogging=*/true);
@@ -38,6 +46,9 @@ void loop() {
   EllipsePoint p;
   Ellipse_step(p);
   Serial.printf("lat=%.7f lon=%.7f\n", p.lat_deg, p.lon_deg);
+
+  uint8_t pkt[4] = {0xAA, 0x01, 0x02, 0x55};
+  link.write(pkt, sizeof(pkt));
 
   Serial.println();
   delay(200);
