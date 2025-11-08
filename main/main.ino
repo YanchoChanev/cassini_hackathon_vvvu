@@ -1,12 +1,17 @@
 #include "hr_module.h"
 #include "gyro_module.h"
+#include "ellipse_sim.h"
 
 float bpm;
 GyroReading g;
 
 void setup() {
   HR_init(/*serialLogging=*/false, /*calibrationMode=*/false);
+
   Gyro_init(/*serialLogging=*/true);
+
+  EllipseConfig cfg;
+  Ellipse_init(cfg);
 }
 
 void loop() {
@@ -22,5 +27,10 @@ void loop() {
     Serial.println(g.pitchRate_dps, 1);
   }
 
+  EllipsePoint p;
+  Ellipse_step(p);
+  Serial.printf("lat=%.7f lon=%.7f\n", p.lat_deg, p.lon_deg);
+
+  Serial.println();
   delay(200);
 }
