@@ -55,7 +55,7 @@ void loop() {
   const float lon = p.lon_deg;
   const uint8_t hr = bpm;
   const int32_t id = 1234;
-  uint8_t payload[15];
+  uint8_t payload[17];
   size_t off = 0;
   payload[off++] = (uint8_t)(alert ? 'a' : 'd');  // 'a' = alert, 'd' = data
   memcpy(payload + off, &lat, sizeof(lat));
@@ -65,6 +65,8 @@ void loop() {
   payload[off++] = hr;
   memcpy(payload + off, &id, sizeof(id));
   off += sizeof(id);
+  payload[off++] = 0x00;
+  payload[off++] = 0xFF;
   payload[off++] = 0x00;
   Link.write(payload, off);
 
