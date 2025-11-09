@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="logos/logo-no-bg.png" alt="LifeLine Sentinel Logo" width="250"/>
+  <img src="logos/logo-black-no-bg.png" alt="LifeLine Sentinel Logo" width="250"/>
 </p>
 
 # LifeLine Sentinel
