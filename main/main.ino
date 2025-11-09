@@ -1,5 +1,3 @@
-#include <SoftwareSerial.h>
-
 #include "hr_module.h"
 #include "gyro_module.h"
 #include "ellipse_sim.h"
@@ -9,12 +7,12 @@ GyroReading g;
 EllipseConfig cfg;
 bool alert = false;
 
-SoftwareSerial link(32, 33);
+HardwareSerial Link(2);
 
 void setup() {
   Serial.begin(115200);
-  
-  link.begin(9600);
+
+  Link.begin(9600, SERIAL_8N1, 32, 33);
 
   HR_init(/*serialLogging=*/false, /*calibrationMode=*/false);
 
@@ -35,11 +33,15 @@ void loop() {
       alert = false;
     }
 
-    Serial.print("roll=");  Serial.print(g.roll_deg, 1);
-    Serial.print("  pitch="); Serial.print(g.pitch_deg, 1);
+    Serial.print("roll=");
+    Serial.print(g.roll_deg, 1);
+    Serial.print("  pitch=");
+    Serial.print(g.pitch_deg, 1);
     Serial.print("  | rates dps: ");
-    Serial.print(g.rollRate_dps, 1); Serial.print(", ");
-    Serial.print(g.pitchRate_dps, 1); Serial.print(" | ");
+    Serial.print(g.rollRate_dps, 1);
+    Serial.print(", ");
+    Serial.print(g.pitchRate_dps, 1);
+    Serial.print(" | ");
     Serial.println(alert ? " !ALERT" : "");
   }
 
@@ -47,8 +49,22 @@ void loop() {
   Ellipse_step(p);
   Serial.printf("lat=%.7f lon=%.7f\n", p.lat_deg, p.lon_deg);
 
-  uint8_t pkt[4] = {0xAA, 0x01, 0x02, 0x55};
-  link.write(pkt, sizeof(pkt));
+  // Payload to satellite
+  const float lat = p.lat_deg;
+  const float lon = p.lon_deg;
+  const uint8_t hr = bpm;
+  const int32_t id = 1234;
+  uint8_t payload[14];
+  size_t off = 0;
+  payload[off++] = (uint8_t)(alert ? 'a' : 'd');
+  memcpy(payload + off, &lat, sizeof(lat));
+  off += sizeof(lat);
+  memcpy(payload + off, &lon, sizeof(lon));
+  off += sizeof(lon);
+  payload[off++] = hr;
+  memcpy(payload + off, &id, sizeof(id));
+  off += sizeof(id);
+  Link.write(payload, sizeof(payload));
 
   Serial.println();
   delay(200);
