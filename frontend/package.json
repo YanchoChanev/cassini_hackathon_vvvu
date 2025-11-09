@@ -1,0 +1,12 @@
+{
+  "name": "osm-satellite-hr-demo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Leaflet map with OSM + satellite layer and colored markers loaded via AJAX",
+  "scripts": {
+    "start": "http-server -p 5173 -c-1 ."
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}
