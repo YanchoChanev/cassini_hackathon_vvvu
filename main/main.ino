@@ -11,7 +11,6 @@ HardwareSerial Link(2);
 
 void setup() {
   Serial.begin(115200);
-
   Link.begin(9600, SERIAL_8N1, 32, 33);
 
   HR_init(/*serialLogging=*/false, /*calibrationMode=*/false);
@@ -22,17 +21,18 @@ void setup() {
 }
 
 void loop() {
+  // HR sensor
   bpm = HR_step();
   Serial.print("BPM: ");
   Serial.println(bpm);
 
+  // Gyro sensor
   if (Gyro_step(g)) {
     if (g.rollRate_dps > 100 || g.pitchRate_dps > 100) {
       alert = true;
     } else {
       alert = false;
     }
-
     Serial.print("roll=");
     Serial.print(g.roll_deg, 1);
     Serial.print("  pitch=");
@@ -45,11 +45,12 @@ void loop() {
     Serial.println(alert ? " !ALERT" : "");
   }
 
+  // GPS position simulator
   EllipsePoint p;
   Ellipse_step(p);
   Serial.printf("lat=%.7f lon=%.7f\n", p.lat_deg, p.lon_deg);
 
-  // Payload to satellite
+  // Send payload to satellite
   const float lat = p.lat_deg;
   const float lon = p.lon_deg;
   const uint8_t hr = bpm;
@@ -66,6 +67,7 @@ void loop() {
   off += sizeof(id);
   Link.write(payload, sizeof(payload));
 
+  // Pacing
   Serial.println();
   delay(200);
 }
